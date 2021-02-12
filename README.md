@@ -85,3 +85,55 @@ Function: &ExUnit.run/0
 ```
 
 </details>
+
+Matching against maps produces a fine mismatch message:
+
+```
+# a map
+1) test you can match on the struct as a module attribute (ModuleAttributeInspectTest)
+     test/module_attribute_inspect_test.exs:6
+     match (=) failed
+     code:  assert %@my_struct_type{} = MapSet.new()
+     left:  %{__struct__: @my_struct_type}
+     right: %MapSet{map: %{}, version: 2}
+     stacktrace:
+       test/module_attribute_inspect_test.exs:7: (test)
+
+
+
+Finished in 0.03 seconds
+1 test, 1 failure
+```
+
+And the message is fine when the module attribute is replaced with the literal
+value:
+
+```
+1) test you can match on the struct as a module attribute (ModuleAttributeInspectTest)
+     test/module_attribute_inspect_test.exs:6
+     match (=) failed
+     code:  assert %ModuleAttributeInspect{} = nil
+     left:  %ModuleAttributeInspect{}
+     right: nil
+     stacktrace:
+       test/module_attribute_inspect_test.exs:7: (test)
+
+
+
+Finished in 0.04 seconds
+1 test, 1 failure
+```
+
+But matching against values which are not maps produces the error. Values that
+do produce the error
+
+- atoms, nil and booleans included
+- pid
+- reference
+- numbers
+- binaries
+- lists (including the empty list and charlists)
+
+Values that do not produce the error
+
+- maps (including structs)
